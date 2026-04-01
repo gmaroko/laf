@@ -9,7 +9,7 @@ import androidx.room.RoomDatabase;
 import com.gmaroko.laf.data.local.dao.ItemDao;
 import com.gmaroko.laf.data.local.entity.Item;
 
-@Database(entities = {Item.class}, version = 1)
+@Database(entities = {Item.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase instance;
