@@ -1,55 +1,108 @@
 package com.gmaroko.laf.data.repository;
 
-import android.app.Application;
-
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
-import com.gmaroko.laf.data.local.dao.ItemDao;
-import com.gmaroko.laf.data.local.database.AppDatabase;
 import com.gmaroko.laf.data.local.entity.Item;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class ItemRepository {
 
-    private ItemDao itemDao;
-    private LiveData<List<Item>> allItems;
-    private ExecutorService executorService;
+    private final FirebaseFirestore db;
+    private final CollectionReference itemsRef;
+    private final MutableLiveData<List<Item>> allItems;
 
-    public ItemRepository(Application application) {
-        AppDatabase database = AppDatabase.getInstance(application);
-        itemDao = database.itemDao();
-        allItems = itemDao.getAllItems();
-        executorService = Executors.newSingleThreadExecutor();
+    public ItemRepository() {
+        db = FirebaseFirestore.getInstance();
+        itemsRef = db.collection("items");
+        allItems = new MutableLiveData<>();
+
+        // Listen for realtime updates
+        itemsRef.addSnapshotListener((snapshots, e) -> {
+            if (snapshots != null) {
+                List<Item> itemList = new ArrayList<>();
+                for (QueryDocumentSnapshot doc : snapshots) {
+                    Item item = doc.toObject(Item.class);
+                    item.setDocId(doc.getId()); // store Firestore document ID
+                    itemList.add(item);
+                }
+                allItems.postValue(itemList);
+            }
+        });
     }
 
+    // Insert new item
     public void insert(Item item) {
-        executorService.execute(() -> itemDao.insert(item));
+        itemsRef.add(item).addOnSuccessListener(docRef -> {
+            item.setDocId(docRef.getId());
+        });
     }
 
+    // Update existing item
     public void update(Item item) {
-        executorService.execute(() -> itemDao.update(item));
+        if (item.getDocId() != null) {
+            itemsRef.document(item.getDocId()).set(item);
+        }
     }
 
+    // Delete item
     public void delete(Item item) {
-        executorService.execute(() -> itemDao.delete(item));
+        if (item.getDocId() != null) {
+            itemsRef.document(item.getDocId()).delete();
+        }
     }
 
-    public void updateStatus(int id, String status) {
-        executorService.execute(() -> itemDao.updateStatus(id, status));
+    // Update status only
+    public void updateStatus(String docId, String status) {
+        if (docId != null) {
+            itemsRef.document(docId).update("status", status);
+        }
     }
 
+    // Get all items
     public LiveData<List<Item>> getAllItems() {
         return allItems;
     }
 
+    // Filter by type
     public LiveData<List<Item>> getItemsByType(String type) {
-        return itemDao.getItemsByType(type);
+        MutableLiveData<List<Item>> filtered = new MutableLiveData<>();
+        itemsRef.whereEqualTo("type", type).addSnapshotListener((snapshots, e) -> {
+            if (snapshots != null) {
+                List<Item> itemList = new ArrayList<>();
+                for (QueryDocumentSnapshot doc : snapshots) {
+                    Item item = doc.toObject(Item.class);
+                    item.setDocId(doc.getId());
+                    itemList.add(item);
+                }
+                filtered.postValue(itemList);
+            }
+        });
+        return filtered;
     }
 
+    // Search by title
     public LiveData<List<Item>> searchItems(String query) {
-        return itemDao.searchItems(query);
+        MutableLiveData<List<Item>> results = new MutableLiveData<>();
+        itemsRef.whereGreaterThanOrEqualTo("title", query)
+                .whereLessThanOrEqualTo("title", query + "\uf8ff")
+                .addSnapshotListener((snapshots, e) -> {
+                    if (snapshots != null) {
+                        List<Item> itemList = new ArrayList<>();
+                        for (QueryDocumentSnapshot doc : snapshots) {
+                            Item item = doc.toObject(Item.class);
+                            item.setDocId(doc.getId());
+                            itemList.add(item);
+                        }
+                        results.postValue(itemList);
+                    }
+                });
+        return results;
     }
 }

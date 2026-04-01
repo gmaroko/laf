@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.gmaroko.laf.R;
 import com.gmaroko.laf.data.local.entity.Item;
 import com.gmaroko.laf.viewmodel.ItemViewModel;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class AddItemActivity extends AppCompatActivity {
 
@@ -50,7 +51,11 @@ public class AddItemActivity extends AppCompatActivity {
             return;
         }
 
-        Item newItem = new Item(title, description, location, date, type, "", status);
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        String userId = auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : "guest";
+        String userEmail = auth.getCurrentUser() != null ? auth.getCurrentUser().getEmail() : "guest";
+
+        Item newItem = new Item(title, description, location, date, type, "", "active", userId, userEmail);
         viewModel.insert(newItem);
 
         Toast.makeText(this, "Item saved!", Toast.LENGTH_SHORT).show();

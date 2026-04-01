@@ -2,6 +2,7 @@ package com.gmaroko.laf.ui.home;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.gmaroko.laf.R;
 import com.gmaroko.laf.ui.additem.AddItemActivity;
+import com.gmaroko.laf.ui.auth.LoginActivity;
 import com.gmaroko.laf.viewmodel.ItemViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -35,9 +37,18 @@ public class HomeActivity extends AppCompatActivity {
             adapter.setItems(items);
         });
 
+        boolean isGuest = getIntent().getBooleanExtra("guest", false);
+
         FloatingActionButton fab = findViewById(R.id.fabAdd);
-        fab.setOnClickListener(v -> {
-            startActivity(new Intent(HomeActivity.this, AddItemActivity.class));
-        });
+        if (isGuest) {
+            fab.setOnClickListener(v -> {
+                Toast.makeText(this, "Login required to add items", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(HomeActivity.this, LoginActivity.class));
+            });
+        } else {
+            fab.setOnClickListener(v -> {
+                startActivity(new Intent(HomeActivity.this, AddItemActivity.class));
+            });
+        }
     }
 }

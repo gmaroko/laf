@@ -1,22 +1,13 @@
 package com.gmaroko.laf.data.local.entity;
 
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
+import com.google.firebase.firestore.Exclude;
 
 import java.io.Serializable;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-
-//@AllArgsConstructor
-//@Getter
-//@Setter
-@Entity(tableName = "items")
 public class Item implements Serializable {
 
-    @PrimaryKey(autoGenerate = true)
-    private int id;
+    // Firestore document ID (string)
+    private String docId;
 
     private String title;
     private String description;
@@ -24,11 +15,17 @@ public class Item implements Serializable {
     private String date;
     private String type; // "lost" or "found"
     private String imageUri;
-    private String status; // "active" or "resolved"
+    private String status;
+    private String userId;
+    private String userEmail;
+
+    // Empty constructor required for Firestore
+    public Item() {}
 
     // Constructor
     public Item(String title, String description, String location,
-                String date, String type, String imageUri, String status) {
+                String date, String type, String imageUri, String status,
+                String userId, String userEmail) {
         this.title = title;
         this.description = description;
         this.location = location;
@@ -36,11 +33,14 @@ public class Item implements Serializable {
         this.type = type;
         this.imageUri = imageUri;
         this.status = status;
+        this.userId = userId;
+        this.userEmail = userEmail;
     }
 
     // Getters and Setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    @Exclude
+    public String getDocId() { return docId; }
+    public void setDocId(String docId) { this.docId = docId; }
 
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
@@ -62,4 +62,10 @@ public class Item implements Serializable {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    public String getUserId() { return userId; }
+    public void setUserId(String userId) { this.userId = userId; }
+
+    public String getUserEmail() { return userEmail; }
+    public void setUserEmail(String userEmail) { this.userEmail = userEmail; }
 }

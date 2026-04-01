@@ -6,14 +6,20 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.gmaroko.laf.ui.home.HomeActivity;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Intent intent = new Intent(this, HomeActivity.class);
-        startActivity(intent);
-        finish(); // close MainActivity so back button exits app
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        if (auth.getCurrentUser() != null) {
+            startActivity(new Intent(this, HomeActivity.class));
+        } else {
+            startActivity(new Intent(this, HomeActivity.class)
+                    .putExtra("guest", true));
+        }
+        finish();
     }
 }

@@ -47,9 +47,23 @@
             android:layout_height="wrap_content"
             android:textStyle="italic"/>
 
+        <TextView
+            android:id="@+id/logByText"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="italic"/>
+
         <Button
             android:id="@+id/btnMarkResolved"
             android:text="Mark as Resolved"
+            android:layout_marginTop="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/btnContactOwner"
+            android:text="Contact User"
             android:layout_marginTop="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>

@@ -24,6 +24,8 @@
         <activity android:name=".ui.home.HomeActivity" />
         <activity android:name=".ui.additem.AddItemActivity" />
         <activity android:name=".ui.details.ItemDetailActivity" />
+        <activity android:name=".ui.auth.RegisterActivity" />
+        <activity android:name=".ui.auth.LoginActivity" />
 
     </application>
 
