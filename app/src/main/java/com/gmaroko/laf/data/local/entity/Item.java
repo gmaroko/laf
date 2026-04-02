@@ -5,10 +5,7 @@ import com.google.firebase.firestore.Exclude;
 import java.io.Serializable;
 
 public class Item implements Serializable {
-
-    // Firestore document ID (string)
     private String docId;
-
     private String title;
     private String description;
     private String location;

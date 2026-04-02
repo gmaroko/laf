@@ -46,6 +46,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
         holder.location.setText(item.getLocation());
         holder.date.setText(item.getDate());
         holder.type.setText(item.getType());
+        holder.description.setText(item.getDescription());
 
         // Open detail activity on click
         holder.itemView.setOnClickListener(v -> {
@@ -57,7 +58,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
 
     public static class ItemViewHolder extends RecyclerView.ViewHolder {
 
-        TextView title, location, date, type;
+        TextView title, location, date, type, description;
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -65,6 +66,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
             location = itemView.findViewById(R.id.locationText);
             date = itemView.findViewById(R.id.dateText);
             type = itemView.findViewById(R.id.typeText);
+            description = itemView.findViewById(R.id.descriptionText);
         }
     }
 }

@@ -23,7 +23,7 @@ public class ItemRepository {
         itemsRef = db.collection("items");
         allItems = new MutableLiveData<>();
 
-        // Listen for realtime updates
+        // listen for realtime updates
         itemsRef.addSnapshotListener((snapshots, e) -> {
             if (snapshots != null) {
                 List<Item> itemList = new ArrayList<>();
@@ -37,40 +37,40 @@ public class ItemRepository {
         });
     }
 
-    // Insert new item
+    // insert new item
     public void insert(Item item) {
         itemsRef.add(item).addOnSuccessListener(docRef -> {
             item.setDocId(docRef.getId());
         });
     }
 
-    // Update existing item
+    // update existing item
     public void update(Item item) {
         if (item.getDocId() != null) {
             itemsRef.document(item.getDocId()).set(item);
         }
     }
 
-    // Delete item
+    // delete item
     public void delete(Item item) {
         if (item.getDocId() != null) {
             itemsRef.document(item.getDocId()).delete();
         }
     }
 
-    // Update status only
+    // update status only
     public void updateStatus(String docId, String status) {
         if (docId != null) {
             itemsRef.document(docId).update("status", status);
         }
     }
 
-    // Get all items
+    // get all items
     public LiveData<List<Item>> getAllItems() {
         return allItems;
     }
 
-    // Filter by type
+    // filter by type
     public LiveData<List<Item>> getItemsByType(String type) {
         MutableLiveData<List<Item>> filtered = new MutableLiveData<>();
         itemsRef.whereEqualTo("type", type).addSnapshotListener((snapshots, e) -> {
@@ -87,7 +87,7 @@ public class ItemRepository {
         return filtered;
     }
 
-    // Search by title
+    // search by title
     public LiveData<List<Item>> searchItems(String query) {
         MutableLiveData<List<Item>> results = new MutableLiveData<>();
         itemsRef.whereGreaterThanOrEqualTo("title", query)
@@ -104,5 +104,24 @@ public class ItemRepository {
                     }
                 });
         return results;
+    }
+
+    // items posted by user
+    public LiveData<List<Item>> getItemsByUser(String userId) {
+        MutableLiveData<List<Item>> userItems = new MutableLiveData<>();
+        itemsRef.whereEqualTo("userId", userId)
+                .addSnapshotListener((snapshots, e) -> {
+                    if (snapshots != null) {
+                        List<Item> itemList = new ArrayList<>();
+                        for (QueryDocumentSnapshot doc : snapshots) {
+                            Item item = doc.toObject(Item.class);
+                            item.setDocId(doc.getId());
+                            itemList.add(item);
+                        }
+                        userItems.postValue(itemList);
+                    }
+                });
+        return userItems;
+
     }
 }

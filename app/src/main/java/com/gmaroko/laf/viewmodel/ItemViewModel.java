@@ -45,4 +45,8 @@ public class ItemViewModel extends ViewModel {
     public LiveData<List<Item>> searchItems(String query) {
         return repository.searchItems(query);
     }
+
+    public LiveData<List<Item>> getItemsByUser(String userId) {
+        return repository.getItemsByUser(userId);
+    }
 }
